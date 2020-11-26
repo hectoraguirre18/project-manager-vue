@@ -44,7 +44,10 @@
             size="sm"
             @click="addEmptySkill">+</b-button>
         </p>
-        <b-form-group v-for="skill in user.skillList">
+        <b-form-group
+          v-for="skill in user.skillList"
+          v-bind:data="skill"
+          v-bind:key="skill.timestamp">
             <b-container>
               <b-form-row>
                 <b-col>
@@ -113,7 +116,8 @@ export default {
     addEmptySkill: function(event) {
       this.user.skillList.push({
         description: '',
-        rank: null
+        rank: null,
+        timestamp: new Date().getTime()
       });
     },
     removeSkill: function(skill) {

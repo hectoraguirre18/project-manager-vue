@@ -1,7 +1,7 @@
 {
   "name": "project-manager-vue",
   "version": "1.0.0",
-  "description": "Client web code por a simple project manager application for Web Platforms class.",
+  "description": "Client web code for a simple project manager application for Web Platforms class.",
   "author": "Hector <a320793@uach.mx>",
   "private": true,
   "scripts": {
@@ -10,6 +10,8 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.19.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

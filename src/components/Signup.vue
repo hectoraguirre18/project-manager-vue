@@ -5,12 +5,12 @@
         <h3>Sign Up</h3>
         <b-form-group>
             <label>Email</label>
-            <b-form-input id="mail" type="email" v-model="user.email"/>
+            <b-form-input id="email" type="email" v-model="user.email"/>
         </b-form-group>
 
         <b-form-group>
             <label>Password</label>
-            <b-form-input id="pwd" type="password" v-model="user.password"/>
+            <b-form-input id="pass" type="password" v-model="user.password"/>
         </b-form-group>
         <b-form-group>
           
@@ -44,7 +44,7 @@
             size="sm"
             @click="addEmptySkill">+</b-button>
         </p>
-        <b-form-group v-for="skill in user.skills">
+        <b-form-group v-for="skill in user.skillList">
             <b-container>
               <b-form-row>
                 <b-col>
@@ -78,6 +78,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Signup',
   data () {
@@ -90,7 +92,7 @@ export default {
         curp: '',
         rfc: '',
         address: '',
-        skills: [],
+        skillList: [],
       },
       ranks: [
         {value: null, text: 'Select a rank'},
@@ -102,17 +104,21 @@ export default {
   },
   methods: {
     signup: function(event){
-      console.log(this.user);
+      axios.post('http://localhost:3000/auth/signup', this.user)
+      .then(res => {
+        this.$router.push('/login');
+      })
+      .catch(err => alert('Signup failed'))
     },
     addEmptySkill: function(event) {
-      this.user.skills.push({
+      this.user.skillList.push({
         description: '',
         rank: null
       });
     },
     removeSkill: function(skill) {
-      const index = this.user.skills.indexOf(skill);
-      this.user.skills.splice(index, 1);
+      const index = this.user.skillList.indexOf(skill);
+      this.user.skillList.splice(index, 1);
     }
   },
   created() {

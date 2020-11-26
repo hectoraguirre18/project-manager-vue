@@ -5,12 +5,12 @@
         <h3>Login</h3>
         <b-form-group>
             <label>Email address</label>
-            <b-form-input id="mail" type="email" v-model="email" />
+            <b-form-input id="mail" type="email" v-model="user.email" />
         </b-form-group>
 
         <b-form-group>
             <label>Password</label>
-            <b-form-input id="pwd" type="password" v-model="password" />
+            <b-form-input id="pwd" type="password" v-model="user.password" />
         </b-form-group>
 
         <b-button class="btn-block" @click="login">Login</b-button>
@@ -24,17 +24,26 @@
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
   name: 'Login',
   data () {
     return {
-      email: '',
-      password: '',
+      user: {
+        email: '',
+        password: '',
+      }
     }
   },
   methods: {
     login: function(event){
-      console.log('login!')
+      axios.post('http://localhost:3000/auth/login', this.user)
+      .then(res => {
+        console.log(res.data.objs)
+      })
+      .catch(err => alert('Authentication failed'))
     }
   }
 }

@@ -41,7 +41,7 @@ export default {
     login: function(event){
       axios.post('http://localhost:3000/auth/login', this.user)
       .then(res => {
-        console.log(res.data.objs)
+        this.$router.push('dashboard')
       })
       .catch(err => alert('Authentication failed'))
     }

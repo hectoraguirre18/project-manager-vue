@@ -21,7 +21,7 @@
         <template #button-content>
           <span>Account</span>
         </template>
-        <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+        <b-dropdown-item href="#" @click="logout">Sign Out</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
       </b-collapse>
@@ -39,6 +39,7 @@
 <script>
 import dateFormat from 'dateformat';
 import axios from 'axios';
+import {mapActions} from 'vuex';
 
 export default {
   data() {
@@ -75,6 +76,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['logout']),
     rowClicked: function(event) {
       console.log('row')
     },

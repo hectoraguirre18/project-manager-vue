@@ -73,7 +73,7 @@
         </b-form-group>
 
         <p>
-          <b-button block @click="signup">Sign Up</b-button>
+          <b-button block @click="signup(user)">Sign Up</b-button>
         </p>
       </form>
     </b-card>
@@ -82,6 +82,7 @@
 
 <script>
 import axios from 'axios';
+import {mapActions} from 'vuex';
 
 export default {
   name: 'Signup',
@@ -106,13 +107,7 @@ export default {
     }
   },
   methods: {
-    signup: function(event){
-      axios.post('http://localhost:3000/auth/signup', this.user)
-      .then(res => {
-        this.$router.push('/login');
-      })
-      .catch(err => alert('Signup failed'))
-    },
+    ...mapActions(['signup']),
     addEmptySkill: function(event) {
       this.user.skillList.push({
         description: '',

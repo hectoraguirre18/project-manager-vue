@@ -13,7 +13,7 @@
             <b-form-input id="pwd" type="password" v-model="user.password" />
         </b-form-group>
 
-        <b-button class="btn-block" @click="login">Login</b-button>
+        <b-button class="btn-block" @click="login(user)">Login</b-button>
 
         <p class="forgot-password text-center mt-2 mb-4">
             Don't have an account? <router-link to="/signup">Sign up</router-link>
@@ -26,6 +26,7 @@
 <script>
 
 import axios from 'axios';
+import {mapGetters, mapActions} from 'vuex';
 
 export default {
   name: 'Login',
@@ -38,13 +39,7 @@ export default {
     }
   },
   methods: {
-    login: function(event){
-      axios.post('http://localhost:3000/auth/login', this.user)
-      .then(res => {
-        this.$router.push('dashboard')
-      })
-      .catch(err => alert('Authentication failed'))
-    }
+    ...mapActions(['login'])
   }
 }
 </script>

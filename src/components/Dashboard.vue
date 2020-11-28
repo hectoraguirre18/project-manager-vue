@@ -9,10 +9,10 @@
       tbody-tr-class="projectrow"
       @row-clicked="rowClicked">
       <template #cell(edit)="data">
-        <b-button @click="editClicked(data.index)">Edit</b-button>
+        <b-button @click="editClicked(data.index)">{{$t("dashboard.edit")}}</b-button>
       </template>
       <template #head(edit)="data">
-        <b-button @click="onPressedNewProject" variant="success">New</b-button>
+        <b-button @click="onPressedNewProject" variant="success">{{$t("dashboard.new")}}</b-button>
       </template>
     </b-table>
     <b-pagination-nav
@@ -39,31 +39,6 @@ export default {
   },
   data() {
     return {
-      fields: [
-        {key: '_projectName', label: 'Name', class: 'align-middle'},
-        {key: '_projectDescription', label: 'Description', class: 'align-middle'},
-        {key: 'managerName', label: 'Manager', class: 'align-middle'},
-        {key: 'ownerName', label: 'Owner', class: 'align-middle'},
-        {
-          key: 'teamNames',
-          label: 'Members',
-          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`),
-          class: 'align-middle'
-        },
-        {
-          key: '_requestDate',
-          label: 'Requested on', 
-          formatter: val => dateFormat(val, "mmmm d, yyyy"),
-          class: 'text-center align-middle'
-        },
-        {
-          key: '_startDate',
-          label: 'Started on', 
-          formatter: val => val ? dateFormat(val, "mmmm d, yyyy") : '-',
-          class: 'text-center align-middle'
-        },
-        {key: 'edit', label: '', class: 'text-right align-middle'},
-      ],
       dashboard: null
     }
   },
@@ -86,6 +61,35 @@ export default {
     },
     linkGen(pageNum) {
       return pageNum === 1 ? '?' : `?page=${pageNum}`
+    }
+  },
+  computed: {
+    fields() {
+      return [
+        {key: '_projectName', label: this.$t('dashboard.edit'), class: 'align-middle'},
+        {key: '_projectDescription', label: this.$t('dashboard.description'), class: 'align-middle'},
+        {key: 'managerName', label: this.$t('dashboard.manager'), class: 'align-middle'},
+        {key: 'ownerName', label: this.$t('dashboard.owner'), class: 'align-middle'},
+        {
+          key: 'teamNames',
+          label: this.$t('dashboard.members'),
+          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`),
+          class: 'align-middle'
+        },
+        {
+          key: '_requestDate',
+          label: this.$t('dashboard.requestDate'), 
+          formatter: val => dateFormat(val, "mmmm d, yyyy"),
+          class: 'text-center align-middle'
+        },
+        {
+          key: '_startDate',
+          label: this.$t('dashboard.startDate'), 
+          formatter: val => val ? dateFormat(val, "mmmm d, yyyy") : '-',
+          class: 'text-center align-middle'
+        },
+        {key: 'edit', class: 'text-right align-middle'},
+      ];
     }
   },
   beforeCreate: function() {

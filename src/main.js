@@ -6,10 +6,14 @@ import App from './App'
 import router from './router'
 import store from './store'
 import axios from 'axios'
+import VueI18n from 'vue-i18n'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './assets/css/style.css'
+
+import locale_en from './locales/en'
+import locale_es from './locales/es'
 
 axios.defaults.baseURL = 'http://localhost:3000/'
 axios.interceptors.request.use(
@@ -28,12 +32,20 @@ axios.interceptors.request.use(
 Vue.config.productionTip = false
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
+Vue.use(VueI18n)
 
-/* eslint-disable no-new */
+const i18n = new VueI18n({
+  locale: 'en',
+  messages: {en: locale_en, es: locale_es}
+})
+
 new Vue({
   el: '#app',
   store,
   router,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  i18n
 })
+
+export { i18n };

@@ -2,33 +2,33 @@
   <div>
     <Navbar/>
     <form id="projectform" class="card p-3 overflow-auto">
-      <h3>{{ editing ? 'Edit Project' : 'New Project' }}</h3>
+      <h3>{{ editing ? $t("projectForm.title.edit") : $t("projectForm.title.new") }}</h3>
       <b-form-group >
-        <label>Name</label>
+        <label>{{$t("projectForm.name")}}</label>
         <b-form-input id="pfname" v-model="project.projectName"/>
       </b-form-group>
 
       <b-form-group>
-        <label>Description</label>
+        <label>{{$t("projectForm.description")}}</label>
         <b-form-input id="pfdesc" v-model="project.projectDescription"/>
       </b-form-group>
 
       <b-form-group>
-        <label>Request Date</label>
+        <label>{{$t("projectForm.requestDate")}}</label>
         <b-form-datepicker id="pfreqdate" v-model="project.requestDate"/>
       </b-form-group>
 
       <b-form-group>
-        <label>Manager</label>
+        <label>{{$t("projectForm.manager")}}</label>
         <b-form-select id="pfmanager" v-model="project.managerId" :options="managerOptions"/>
       </b-form-group>
 
       <b-form-group>
-        <label>Owner</label>
+        <label>{{$t("projectForm.owner")}}</label>
         <b-form-select id="pfowner" v-model="project.ownerId" :options="ownerOptions"/>
       </b-form-group>
 
-      <label>Team</label>
+      <label>{{$t("projectForm.team")}}</label>
       <b-container class="p-0">
         <b-row>
           <b-col>
@@ -40,7 +40,7 @@
                 @change="selected"
               >
                 <template #first>
-                  <b-form-select-option :value="null" disabled>Add a member</b-form-select-option>
+                  <b-form-select-option :value="null" disabled>{{$t("projectForm.addMember")}}</b-form-select-option>
                 </template>
               </b-form-select>
             </b-form-group>
@@ -66,7 +66,7 @@
 
       <p>
         <b-form-group>
-          <label>Set as Started</label>
+          <label>{{$t("projectForm.started")}}</label>
           <b-form-checkbox
             class="d-inline ml-2"
             switch id="pfstartdate"
@@ -74,7 +74,7 @@
             />
         </b-form-group>
       </p>
-      <b-button block @click="onSave">Save Project</b-button>
+      <b-button block @click="onSave">{{$t("projectForm.save")}}</b-button>
     </form>
   </div>
 </template>

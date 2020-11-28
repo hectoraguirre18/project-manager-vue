@@ -6,6 +6,7 @@ import Dashboard from '@/components/Dashboard'
 import ProjectForm from '@/components/projects/ProjectForm'
 import Board from '@/components/projects/Board'
 import store from '../store'
+import {i18n} from '../main'
 
 Vue.use(Router)
 
@@ -76,6 +77,14 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
+});
+
+
+router.beforeEach((to, from, next) => {
+  if(to.query.hl) {
+    i18n.locale = to.query.hl
+  }
+  next();
 });
 
 

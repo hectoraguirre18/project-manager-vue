@@ -2,43 +2,43 @@
   <div class="signup">
     <b-card id="signup-form" class="overflow-auto">
       <form>
-        <h3>Sign Up</h3>
+        <h3>{{$t("signup")}}</h3>
         <b-form-group>
-            <label>Email</label>
+            <label>{{$t("email")}}</label>
             <b-form-input id="email" type="email" v-model="user.email"/>
         </b-form-group>
 
         <b-form-group>
-            <label>Password</label>
+            <label>{{$t("password")}}</label>
             <b-form-input id="pass" type="password" v-model="user.password"/>
         </b-form-group>
         <b-form-group>
           
-            <label>Name</label>
+            <label>{{$t("name")}}</label>
             <b-form-input id="name" v-model="user.name"/>
         </b-form-group>
 
         <b-form-group>
-            <label>Birthdate</label>
+            <label>{{$t("birthdate")}}</label>
             <b-form-datepicker id="birthdate" v-model="user.birthdate"/>
         </b-form-group>
         <b-form-group>
-            <label>CURP</label>
+            <label>{{$t("curp")}}</label>
             <b-form-input id="curp" v-model="user.curp"/>
         </b-form-group>
 
         <b-form-group>
-            <label>RFC</label>
+            <label>{{$t("rfc")}}</label>
             <b-form-input id="rfc" v-model="user.rfc"/>
         </b-form-group>
         <b-form-group>
 
-            <label>Address</label>
+            <label>{{$t("address")}}</label>
             <b-form-input id="address" v-model="user.address"/>
         </b-form-group>
 
         <p>
-          <label>Skills</label>
+          <label>{{$t("skills")}}</label>
           <b-button 
             variant="success"
             size="sm"
@@ -53,7 +53,7 @@
                 <b-col>
                   <b-form-input
                     id="skill-desc"
-                    placeholder="Skill name"
+                    :placeholder='$t("skill.name")'
                     v-model="skill.description" />
                 </b-col>
                 <b-col>
@@ -73,7 +73,7 @@
         </b-form-group>
 
         <p>
-          <b-button block @click="signup(user)">Sign Up</b-button>
+          <b-button block @click="signup(user)">{{$t("signup")}}</b-button>
         </p>
       </form>
     </b-card>
@@ -99,10 +99,10 @@ export default {
         skillList: [],
       },
       ranks: [
-        {value: null, text: 'Select a rank'},
-        {value: 'junior', text: 'Junior'},
-        {value: 'senior', text: 'Senior'},
-        {value: 'master', text: 'Master'},
+        {value: null, text: this.$t('skill.rank.select')},
+        {value: 'junior', text: this.$t('skill.rank.junior')},
+        {value: 'senior', text: this.$t('skill.rank.senior')},
+        {value: 'master', text: this.$t('skill.rank.master')},
       ],
     }
   },
@@ -130,7 +130,7 @@ export default {
 
 #signup-form {
   position: fixed;
-  width: 12cm;
+  width: 14cm;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

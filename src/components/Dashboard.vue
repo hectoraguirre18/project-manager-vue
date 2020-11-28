@@ -16,6 +16,7 @@
 import dateFormat from 'dateformat';
 import axios from 'axios';
 import {mapActions} from 'vuex';
+import async from 'async';
 
 import Navbar from './Navbar'
 
@@ -29,9 +30,13 @@ export default {
       fields: [
         {key: '_projectName', label: 'Name'},
         {key: '_projectDescription', label: 'Description'},
-        {key: '_managerId', label: 'Manager'},
-        {key: '_ownerId', label: 'Owner'},
-        {key: '_teamIds', label: 'Members'},
+        {key: 'managerName', label: 'Manager'},
+        {key: 'ownerName', label: 'Owner'},
+        {
+          key: 'teamNames',
+          label: 'Members',
+          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`)
+        },
         {
           key: '_requestDate',
           label: 'Requested on', 
@@ -43,30 +48,17 @@ export default {
           formatter: val => dateFormat(val, "mmmm d, yyyy")
         },
       ],
-      projects: [
-        {
-          _id: '1fajkfnkjwa',
-          _projectName: 'Project1',
-          _requestDate: Date(),
-          _startDate: Date(),
-          _projectDescription: 'My Project',
-          _managerId: 'abc',
-          _ownerId: '123',
-          _teamIds: [],
-        },
-      ]
+      projects: []
     }
   },
   methods: {
-    ...mapActions(['logout']),
+    ...mapActions(['logout', 'getProjects']),
     rowClicked: function(project) {
       this.$router.push(`/project/${project._id}`)
     },
     loadProjects: function(event){
-      axios.get('http://localhost:3000/projects')
-      .then(res => {
-        this.projects = res.data.objs.docs
-      })
+      this.getProjects()
+      .then(projects => this.projects = projects)
       .catch(err => console.error(err))
     },
     onPressedNewProject: function(event) {

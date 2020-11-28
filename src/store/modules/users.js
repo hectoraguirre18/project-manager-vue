@@ -15,6 +15,14 @@ const actions = {
       console.log(err);
       return null;
     })
+  },
+  async getUserName({dispatch}, id) {
+    return axios.get(`users/id/${id}`)
+    .then(res => res.data.objs._name)
+    .catch(err => {
+      console.log(err);
+      return null;
+    })
   }
 };
 

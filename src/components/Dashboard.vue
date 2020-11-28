@@ -1,7 +1,6 @@
 <template>
   <div>
     <Navbar/>
-    <b-button variant="success" @click="onPressedNewProject">New Project</b-button>
     <b-table id="projectsTable"
       striped hover
       :items="dashboard.docs"
@@ -9,6 +8,12 @@
       v-if="dashboard != null"
       tbody-tr-class="projectrow"
       @row-clicked="rowClicked">
+      <template #cell(edit)="data">
+        <b-button @click="editClicked(data.index)">Edit</b-button>
+      </template>
+      <template #head(edit)="data">
+        <b-button @click="onPressedNewProject" variant="success">New</b-button>
+      </template>
     </b-table>
     <b-pagination-nav
       v-if="dashboard != null"
@@ -35,25 +40,29 @@ export default {
   data() {
     return {
       fields: [
-        {key: '_projectName', label: 'Name'},
-        {key: '_projectDescription', label: 'Description'},
-        {key: 'managerName', label: 'Manager'},
-        {key: 'ownerName', label: 'Owner'},
+        {key: '_projectName', label: 'Name', class: 'align-middle'},
+        {key: '_projectDescription', label: 'Description', class: 'align-middle'},
+        {key: 'managerName', label: 'Manager', class: 'align-middle'},
+        {key: 'ownerName', label: 'Owner', class: 'align-middle'},
         {
           key: 'teamNames',
           label: 'Members',
-          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`)
+          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`),
+          class: 'align-middle'
         },
         {
           key: '_requestDate',
           label: 'Requested on', 
-          formatter: val => dateFormat(val, "mmmm d, yyyy")
+          formatter: val => dateFormat(val, "mmmm d, yyyy"),
+          class: 'text-center align-middle'
         },
         {
           key: '_startDate',
           label: 'Started on', 
-          formatter: val => dateFormat(val, "mmmm d, yyyy")
+          formatter: val => val ? dateFormat(val, "mmmm d, yyyy") : '-',
+          class: 'text-center align-middle'
         },
+        {key: 'edit', label: '', class: 'text-right align-middle'},
       ],
       dashboard: null
     }
@@ -62,6 +71,10 @@ export default {
     ...mapActions(['logout', 'getDashboard']),
     rowClicked: function(project) {
       this.$router.push(`/project/${project._id}`)
+    },
+    editClicked: function(index) {
+      const id = this.dashboard.docs[index]._id
+      this.$router.push(`/project/edit/${id}`)
     },
     loadProjects: function(page){
       this.getDashboard(page)

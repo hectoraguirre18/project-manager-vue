@@ -2,7 +2,7 @@
   <div>
     <Navbar/>
     <form id="projectform" class="card p-3 overflow-auto">
-      <h3>{{ title }}</h3>
+      <h3>{{ editing ? 'Edit Project' : 'New Project' }}</h3>
       <b-form-group >
         <label>Name</label>
         <b-form-input id="pfname" v-model="project.projectName"/>
@@ -74,7 +74,7 @@
             />
         </b-form-group>
       </p>
-      <b-button block @click="postProject(project)">Sign Up</b-button>
+      <b-button block @click="onSave">Save Project</b-button>
     </form>
   </div>
 </template>
@@ -91,13 +91,14 @@ export default {
   data() {
     return {
       title: '',
+      editing: false,
       project: {
         projectName: '',
         projectDescription: '',
         requestDate: new Date(),
         startDate: null,
         managerId: null,
-        ownerId: 'patitoid',
+        ownerId: null,
         teamIds: []
       },
       users:[],
@@ -105,7 +106,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['getUsers', 'postProject']),
+    ...mapActions(['getUsers', 'postProject', 'getProjectById', 'updateProject']),
     checkboxChanged: function(checked) {
       this.project.startDate = checked ? new Date() : null;
     },
@@ -119,6 +120,17 @@ export default {
     },
     nameOf: function(id) {
       return this.users.find(u => u.value === id).text
+    },
+    onSave: function() {
+      if(this.editing) {
+        console.log(this.project)
+        this.updateProject({
+          id: this.$route.params.id,
+          project: this.project
+        });
+      } else {
+        this.postProject(this.project)
+      }
     }
   },
   computed: {
@@ -143,7 +155,7 @@ export default {
     },
   },
   created: function() {
-    this.title = this.$route.params.id ? 'Edit Project' : 'New Project';
+    this.editing = this.$route.params.id != undefined;
     this.getUsers().then(res => {
       this.users = res.map(u => {
         return {
@@ -151,6 +163,18 @@ export default {
           text: `${u._name} (${u._email})`
         }
       });
+      if(this.$route.params.id) {
+        this.getProjectById(this.$route.params.id)
+        .then(project => this.project = {
+          projectName: project._projectName,
+          projectDescription: project._projectDescription,
+          requestDate: project._requestDate,
+          startDate: project._startDate,
+          managerId: project._managerId,
+          ownerId: project._ownerId,
+          teamIds: project._teamIds
+        })
+      }
     });
   }
 }

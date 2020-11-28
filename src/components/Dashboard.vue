@@ -4,11 +4,18 @@
     <b-button variant="success" @click="onPressedNewProject">New Project</b-button>
     <b-table id="projectsTable"
       striped hover
-      :items="projects"
+      :items="dashboard.docs"
       :fields="fields"
+      v-if="dashboard != null"
       tbody-tr-class="projectrow"
       @row-clicked="rowClicked">
     </b-table>
+    <b-pagination-nav
+      v-if="dashboard != null"
+      :link-gen="linkGen"
+      :number-of-pages="dashboard.totalPages"
+      use-router
+    ></b-pagination-nav>
   </div>
 </template>
 
@@ -48,28 +55,36 @@ export default {
           formatter: val => dateFormat(val, "mmmm d, yyyy")
         },
       ],
-      projects: []
+      dashboard: null
     }
   },
   methods: {
-    ...mapActions(['logout', 'getProjects']),
+    ...mapActions(['logout', 'getDashboard']),
     rowClicked: function(project) {
       this.$router.push(`/project/${project._id}`)
     },
-    loadProjects: function(event){
-      this.getProjects()
-      .then(projects => this.projects = projects)
+    loadProjects: function(page){
+      this.getDashboard(page)
+      .then(dashboard => this.dashboard = dashboard)
       .catch(err => console.error(err))
     },
     onPressedNewProject: function(event) {
       this.$router.push('/project/new')
-    } 
+    },
+    linkGen(pageNum) {
+      return pageNum === 1 ? '?' : `?page=${pageNum}`
+    }
   },
   beforeCreate: function() {
     document.body.className = 'home';
   },
   created: function() {
-    this.loadProjects()
+    this.loadProjects(this.$route.query.page)
+  },
+  watch: {
+    $route (to, from) {
+      this.loadProjects(to.query.page)
+    }
   }
 }
 </script>

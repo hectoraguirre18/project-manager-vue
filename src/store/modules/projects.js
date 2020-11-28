@@ -9,12 +9,20 @@ const getters = {
 };
 
 const actions = {
-  async getProjects({dispatch}, user) {
-    return axios.get('projects')
-    .then(res => {
-      return async.parallel(res.data.objs.docs.map(project => function(callback) {
-        dispatch('addNamesToProject', project).then(res => callback(null, res))
-      }))
+  async getDashboard({dispatch}, page) {
+    console.log('page', page)
+    return axios.get('projects', {
+      params: {
+        page: page
+      }
+    })
+    .then(async res => {
+      return {
+        ...res.data.objs,
+        docs: await async.parallel(res.data.objs.docs.map(project => function(callback) {
+          dispatch('addNamesToProject', project).then(res => callback(null, res))
+        }))
+      }
     })
   },
   async postProject({dispatch}, user) {

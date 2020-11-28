@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Signup from '@/components/Signup'
 import Dashboard from '@/components/Dashboard'
+import ProjectForm from '@/components/projects/ProjectForm'
 import store from '../store'
 
 Vue.use(Router)
@@ -29,6 +30,18 @@ const router = new Router({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard,
+      meta: {requiresAuth: true}
+    },
+    {
+      path: '/project/new',
+      name: 'New Project',
+      component: ProjectForm,
+      meta: {requiresAuth: true}
+    },
+    {
+      path: '/project/:id',
+      name: 'Edit Project',
+      component: ProjectForm,
       meta: {requiresAuth: true}
     },
   ]

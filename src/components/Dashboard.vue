@@ -1,12 +1,14 @@
 <template>
   <div>
     <Navbar/>
+    <b-button variant="success" @click="onPressedNewProject">New Project</b-button>
     <b-table id="projectsTable"
       striped hover
       :items="projects"
       :fields="fields"
       tbody-tr-class="projectrow"
-      @row-clicked="rowClicked"></b-table>
+      @row-clicked="rowClicked">
+    </b-table>
   </div>
 </template>
 
@@ -57,8 +59,8 @@ export default {
   },
   methods: {
     ...mapActions(['logout']),
-    rowClicked: function(event) {
-      console.log('row')
+    rowClicked: function(project) {
+      this.$router.push(`/project/${project._id}`)
     },
     loadProjects: function(event){
       axios.get('http://localhost:3000/projects')
@@ -66,7 +68,10 @@ export default {
         this.projects = res.data.objs.docs
       })
       .catch(err => console.error(err))
-    }
+    },
+    onPressedNewProject: function(event) {
+      this.$router.push('/project/new')
+    } 
   },
   beforeCreate: function() {
     document.body.className = 'home';

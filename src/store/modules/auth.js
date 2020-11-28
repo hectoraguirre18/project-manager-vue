@@ -27,8 +27,9 @@ const actions = {
   async login({commit}, user) {
     axios.post('auth/login', user)
     .then(res => commit('setUser', {
+        id: res.data.objs.id,
         email: user.email,
-        token: res.data.objs
+        token: res.data.objs.token
       }))
     .then(res => router.push('/dashboard'))
     .catch(err => {

@@ -48,7 +48,7 @@
           v-for="skill in user.skillList"
           v-bind:data="skill"
           v-bind:key="skill.timestamp">
-            <b-container>
+            <b-container class="p-0">
               <b-form-row>
                 <b-col>
                   <b-form-input

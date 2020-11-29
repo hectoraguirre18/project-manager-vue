@@ -24,14 +24,16 @@ export default {
   signupPrompt: 'Don\'t have an account?',
   dashboard: {
     name: 'Name',
+    title: 'My Projects',
     description: 'Description',
     manager: 'Scrum Master',
     owner: 'Product Owner',
     members: 'Members',
     requestDate: 'Requested on',
     startDate: 'Started on',
-    new: 'New',
-    edit: 'Edit'
+    new: 'New Project',
+    edit: 'Edit',
+    deletePrompt: 'Are you sure you want to delete this project?',
   },
   projectForm: {
     title: {

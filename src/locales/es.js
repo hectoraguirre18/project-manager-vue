@@ -24,14 +24,16 @@ export default {
   signupPrompt: '¿No tienes una cuenta?',
   dashboard: {
     name: 'Nombre',
+    title: 'Mis Proyectos',
     description: 'Descripción',
     manager: 'Scrum Master',
     owner: 'Product Owner',
     members: 'Equipo',
     requestDate: 'Fecha de solicitud',
     startDate: 'Fecha de arranque',
-    new: 'Nuevo',
-    edit: 'Editar'
+    new: 'Nuevo Proyecto',
+    edit: 'Editar',
+    deletePrompt: '¿Seguro que deseas eliminar este proyecto?',
   },
   projectForm: {
     title: {

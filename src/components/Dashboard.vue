@@ -1,27 +1,54 @@
 <template>
   <div>
     <Navbar/>
-    <b-table id="projectsTable"
-      striped hover
+    <v-data-table
+      :headers="headers"
       :items="dashboard.docs"
-      :fields="fields"
       v-if="dashboard != null"
-      tbody-tr-class="projectrow"
-      @row-clicked="rowClicked">
-      <template #cell(edit)="data">
-        <b-button @click="editClicked(data.index)">{{$t("dashboard.edit")}}</b-button>
+      :loading="loading"
+      :options.sync="options"
+      :server-items-length="dashboard.totalDocs"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>{{$t("dashboard.title")}}</v-toolbar-title>
+          <v-divider
+            class="mx-4"
+            inset
+            vertical
+          ></v-divider>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            @click="onPressedNewProject"
+          >
+            {{$t("dashboard.new")}}
+          </v-btn>
+          <v-dialog v-model="dialogDelete" width="unset">
+            <v-card>
+              <v-card-title class="headline">{{$t("dashboard.deletePrompt")}}</v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
       </template>
-      <template #head(edit)="data">
-        <b-button @click="onPressedNewProject" variant="success">{{$t("dashboard.new")}}</b-button>
+      <template v-slot:item.edit="{item}">
+        <v-btn
+        @click="editClicked(item)">
+          {{$t("dashboard.edit")}}
+        </v-btn>
       </template>
-    </b-table>
-    <b-pagination-nav
-      class="pagination"
-      v-if="dashboard != null"
-      :link-gen="linkGen"
-      :number-of-pages="dashboard.totalPages"
-      use-router
-    ></b-pagination-nav>
+      <template v-slot:item.delete="{item}">
+        <v-icon
+          @click="deleteItem(item)"
+        >mdi-delete</v-icon>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
@@ -40,7 +67,14 @@ export default {
   },
   data() {
     return {
-      dashboard: null
+      dashboard: {
+        docs: []
+      },
+      loading: true,
+      options: {},
+      dialog: false,
+      dialogDelete: false,
+      deletingIndex: null,
     }
   },
   methods: {
@@ -48,13 +82,18 @@ export default {
     rowClicked: function(project) {
       this.$router.push(`/project/${project._id}`)
     },
-    editClicked: function(index) {
+    editClicked: function(item) {
+      const index = this.dashboard.docs.indexOf(item)
       const id = this.dashboard.docs[index]._id
       this.$router.push(`/project/edit/${id}`)
     },
     loadProjects: function(page){
+      this.loading = true;
       this.getDashboard(page)
-      .then(dashboard => this.dashboard = dashboard)
+      .then(dashboard => {
+        this.loading = false;
+        this.dashboard = dashboard;
+      })
       .catch(err => console.error(err))
     },
     onPressedNewProject: function(event) {
@@ -62,7 +101,18 @@ export default {
     },
     linkGen(pageNum) {
       return pageNum === 1 ? '?' : `?page=${pageNum}`
-    }
+    },
+    deleteItem (item) {
+      this.deletingIndex = this.dashboard.docs.indexOf(item)
+      this.dialogDelete = true
+    },
+    deleteItemConfirm () {
+      this.dashboard.docs.splice(this.deletingIndex, 1)
+      this.closeDelete()
+    },
+    closeDelete() {
+      this.dialogDelete = false;
+    },
   },
   computed: {
     fields() {
@@ -91,36 +141,58 @@ export default {
         },
         {key: 'edit', class: 'text-right align-middle'},
       ];
+    },
+    headers() {
+      return [
+        {value: '_projectName', text: this.$t('dashboard.name'), class: 'align-middle'},
+        {value: '_projectDescription', text: this.$t('dashboard.description'), class: 'align-middle'},
+        {value: 'managerName', text: this.$t('dashboard.manager'), class: 'align-middle'},
+        {value: 'ownerName', text: this.$t('dashboard.owner'), class: 'align-middle'},
+        {
+          value: 'teamNames',
+          text: this.$t('dashboard.members'),
+          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`),
+          class: 'align-middle'
+        },
+        {
+          value: '_requestDate',
+          text: this.$t('dashboard.requestDate'), 
+          formatter: val => dateFormat(val, "mmmm d, yyyy"),
+          class: 'text-center align-middle'
+        },
+        {
+          value: '_startDate',
+          text: this.$t('dashboard.startDate'), 
+          formatter: val => val ? dateFormat(val, "mmmm d, yyyy") : '-',
+          class: 'text-center align-middle'
+        },
+        {value: 'edit', text:'', class: 'text-right align-middle', sortable: false},
+        {value: 'delete', text:'', class: 'text-right align-middle', sortable: false},
+      ];
     }
   },
   beforeCreate: function() {
     document.body.className = 'home';
   },
-  created: function() {
+  mounted: function() {
     this.loadProjects(this.$route.query.page)
   },
   watch: {
     $route (to, from) {
       this.loadProjects(to.query.page)
+    },
+    options: {
+      handler() {
+        this.loadProjects(this.$route.query.page)
+      },
+      deep: true,
+    },
+    dialog(val) {
+      val || this.close()
+    },
+    dialogDelete(val) {
+      val || this.closeDelete()
     }
   }
 }
 </script>
-
-<style scoped>
-#projectsTable {
-  margin: 1%;
-  width: 98%;
-  background-color: white !important;
-}
-
-#projectsTable >>> .projectrow {
-  cursor: pointer;
-}
-
-.pagination {
-  position: fixed;
-  left: 50%;
-  transform: translate(-50%, -0%);
-}
-</style>

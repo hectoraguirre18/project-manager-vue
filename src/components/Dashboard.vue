@@ -16,6 +16,7 @@
       </template>
     </b-table>
     <b-pagination-nav
+      class="pagination"
       v-if="dashboard != null"
       :link-gen="linkGen"
       :number-of-pages="dashboard.totalPages"
@@ -115,5 +116,11 @@ export default {
 
 #projectsTable >>> .projectrow {
   cursor: pointer;
+}
+
+.pagination {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -0%);
 }
 </style>

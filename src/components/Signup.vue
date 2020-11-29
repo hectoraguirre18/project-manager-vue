@@ -1,82 +1,75 @@
 <template>
-  <div class="signup">
-    <b-card id="signup-form" class="overflow-auto">
-      <form>
-        <h3>{{$t("signup")}}</h3>
-        <b-form-group>
-            <label>{{$t("email")}}</label>
-            <b-form-input id="email" type="email" v-model="user.email"/>
-        </b-form-group>
+  <div id="signup-form" class="overflow-auto">
+    <form>
+      <h3>{{$t("signup")}}</h3>
+      <v-text-field :label="$t('email')" type="email" v-model="user.email"/>
+      <v-text-field :label="$t('password')" type="password" v-model="user.password"/>
+      <v-text-field :label="$t('name')" v-model="user.name"/>
+      <v-menu
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="user.birthdate"
+            :label="$t('birthdate')"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="user.birthdate"
+          @input="menu2 = false"
+          no-title
+        >
+        </v-date-picker>
+      </v-menu>
+      <v-text-field :label="$t('curp')" v-model="user.curp"/>
+      <v-text-field :label="$t('rfc')" v-model="user.rfc"/>
+      <v-text-field :label="$t('address')" v-model="user.address"/>
 
-        <b-form-group>
-            <label>{{$t("password")}}</label>
-            <b-form-input id="pass" type="password" v-model="user.password"/>
-        </b-form-group>
-        <b-form-group>
-          
-            <label>{{$t("name")}}</label>
-            <b-form-input id="name" v-model="user.name"/>
-        </b-form-group>
-
-        <b-form-group>
-            <label>{{$t("birthdate")}}</label>
-            <b-form-datepicker id="birthdate" v-model="user.birthdate"/>
-        </b-form-group>
-        <b-form-group>
-            <label>{{$t("curp")}}</label>
-            <b-form-input id="curp" v-model="user.curp"/>
-        </b-form-group>
-
-        <b-form-group>
-            <label>{{$t("rfc")}}</label>
-            <b-form-input id="rfc" v-model="user.rfc"/>
-        </b-form-group>
-        <b-form-group>
-
-            <label>{{$t("address")}}</label>
-            <b-form-input id="address" v-model="user.address"/>
-        </b-form-group>
-
-        <p>
-          <label>{{$t("skills")}}</label>
-          <b-button 
-            variant="success"
-            size="sm"
-            @click="addEmptySkill">+</b-button>
-        </p>
-        <b-form-group
+      <p>
+        {{$t("skills")}}
+        <v-btn
+          class="ml-2"
+          @click="addEmptySkill">+</v-btn>
+      </p>
+      <v-container>
+        <v-row
           v-for="skill in user.skillList"
-          v-bind:data="skill"
-          v-bind:key="skill.timestamp">
-            <b-container class="p-0">
-              <b-form-row>
-                <b-col>
-                  <b-form-input
-                    id="skill-desc"
-                    :placeholder='$t("skill.name")'
-                    v-model="skill.description" />
-                </b-col>
-                <b-col>
-                  <b-form-select
-                    :options="ranks"
-                    id="skill-rank"
-                    v-model="skill.rank"/>
-                </b-col>
-                  <b-button 
-                    variant="danger"
-                    size="sm"
-                    @click="removeSkill(skill)">
-                    <b-icon-trash-fill/>
-                  </b-button>
-              </b-form-row>
-            </b-container>
-        </b-form-group>
+          v-bind:key="skill.timestamp"
+          align="center"
+        >
+          <v-col>
+            <v-text-field :label="$t('skill.name')" v-model="skill.description"/>
+          </v-col>
+          <v-col>
+            <v-select
+              :items="ranks"
+              :label="$t('skill.rank.select')"
+              v-model="skill.rank"/>
+          </v-col>
+          <v-col
+            align="center"
+            cols="2"
+          >
+            <v-icon @click="removeSkill(skill)">mdi-delete</v-icon>
+          </v-col>
+        </v-row>
+      </v-container>
 
-        <p>
-          <b-button block @click="signup(user)">{{$t("signup")}}</b-button>
-        </p>
-      </form>
-    </b-card>
+      <p>
+        <v-btn
+          class="btn-block"
+          @click="signup(user)"
+          :loading="loading"
+        >{{$t("signup")}}</v-btn>
+      </p>
+    </form>
   </div>
 </template>
 
@@ -99,11 +92,11 @@ export default {
         skillList: [],
       },
       ranks: [
-        {value: null, text: this.$t('skill.rank.select')},
         {value: 'junior', text: this.$t('skill.rank.junior')},
         {value: 'senior', text: this.$t('skill.rank.senior')},
         {value: 'master', text: this.$t('skill.rank.master')},
       ],
+      loading: false,
     }
   },
   methods: {
@@ -118,7 +111,12 @@ export default {
     removeSkill: function(skill) {
       const index = this.user.skillList.indexOf(skill);
       this.user.skillList.splice(index, 1);
-    }
+    },
+    attemptLogin: function(user) {
+      this.loading = true
+      this.signup(user)
+      .then(res => this.loading = false)
+    },
   },
   created() {
     this.addEmptySkill();
@@ -130,7 +128,8 @@ export default {
 
 #signup-form {
   position: fixed;
-  width: 14cm;
+  width: 16cm;
+  padding-right: 2mm;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

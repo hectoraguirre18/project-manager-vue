@@ -7,6 +7,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import VueI18n from 'vue-i18n'
+import vuetify from '@/plugins/vuetify'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -45,7 +46,8 @@ new Vue({
   router,
   components: { App },
   template: '<App/>',
-  i18n
+  i18n,
+  vuetify
 })
 
 export { i18n };

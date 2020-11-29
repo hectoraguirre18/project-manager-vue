@@ -1,4 +1,7 @@
 export default {
+  appName: 'Project Manager',
+  ok: 'Ok',
+  cancel: 'Cancel',
   signup: 'Sign Up',
   email: 'Email',
   password: 'Password',
@@ -11,7 +14,7 @@ export default {
   skill: {
     name: 'Skill name',
     rank: {
-      select: 'Select a rank',
+      select: 'Rank',
       junior: 'Junior',
       senior: 'Senior',
       master: 'Master'
@@ -44,5 +47,10 @@ export default {
     addMember: 'Add a member',
     started: 'Mark as started',
     save: 'Save Project'
+  },
+  appBar: {
+    lang: 'Lang',
+    account: 'My Account',
+    signout: 'Sign Out'
   }
 }

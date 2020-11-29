@@ -1,28 +1,52 @@
 <template>
-<b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#/dashboard">Project Manager</b-navbar-brand>
-
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-      <b-collapse id="nav-collapse" is-nav>
-
-      <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto">
-
-        <b-nav-item-dropdown text="Lang" right>
-          <b-dropdown-item
+<div>
+    <v-app-bar app>
+      <v-toolbar-title class="ml-2">
+        {{$t("appName")}}
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu offset-y>
+        <template v-slot:activator="{on, attrs}">
+          <v-btn
+            dark
+            depressed
+            text
+            v-bind="attrs"
+            v-on="on"
+          >
+          {{$t("appBar.lang")}}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
             v-for="lang in langs"
             v-bind:key="lang.value"
             @click="langChange(lang.value)"
-          >{{lang.label}}</b-dropdown-item>
-        </b-nav-item-dropdown>
-
-        <b-nav-item-dropdown text="Account" right>
-          <b-dropdown-item href="#" @click="logout">Sign Out</b-dropdown-item>
-        </b-nav-item-dropdown>
-      </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
+          >
+            <v-list-item-title>{{lang.label}}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-menu offset-y>
+        <template v-slot:activator="{on, attrs}">
+          <v-btn
+            dark
+            depressed
+            text
+            v-bind="attrs"
+            v-on="on"
+          >
+          {{$t("appBar.account")}}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="logout">
+            <v-list-item-title>{{$t("appBar.signout")}}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-app-bar>
+    </div>
 </template>
 
 <script>
@@ -35,7 +59,13 @@ export default {
       langs: [
         {value: 'es', label: 'Español'},
         {value: 'en', label: 'English'},
-      ]
+      ],
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
     };
   },
   methods: {
@@ -43,7 +73,7 @@ export default {
     langChange: function(lang) {
       this.$i18n.locale = lang;
       this.$router.push({query: {hl: lang}})
-    }
+    },
   }
 }
 </script>

@@ -1,4 +1,7 @@
 export default {
+  appName: 'Project Manager',
+  ok: 'Ok',
+  cancel: 'Cancelar',
   signup: 'Registrarse',
   email: 'Correo',
   password: 'Contraseña',
@@ -11,7 +14,7 @@ export default {
   skill: {
     name: 'Nombre de la habilidad',
     rank: {
-      select: 'Selecciona un nivel',
+      select: 'Nivel',
       junior: 'Junior',
       senior: 'Senior',
       master: 'Master'
@@ -44,5 +47,10 @@ export default {
     addMember: 'Añadir un miembro',
     started: 'Marcar como iniciado',
     save: 'Guardar Proyecto'
+  },
+  appBar: {
+    lang: 'Lang',
+    account: 'Mi Cuenta',
+    signout: 'Cerrar sesión'
   }
 }

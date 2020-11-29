@@ -1,25 +1,20 @@
 <template>
-  <div class="login">
-    <b-card id="login-form">
-      <form>
-        <h3>{{$t("login")}}</h3>
-        <b-form-group>
-            <label>{{$t("email")}}</label>
-            <b-form-input id="mail" type="email" v-model="user.email" />
-        </b-form-group>
+  <div id="login-form" class="login">
+    <form>
+      <h3>{{$t("login")}}</h3>
+      <v-text-field :label="$t('email')" type="email" v-model="user.email"/>
+      <v-text-field :label="$t('password')" type="password" v-model="user.password"/>
 
-        <b-form-group>
-            <label>{{$t("password")}}</label>
-            <b-form-input id="pwd" type="password" v-model="user.password" />
-        </b-form-group>
+      <v-btn
+        class="btn-block"
+        @click="attemptLogin(user)"
+        :loading="loading"
+      >Login</v-btn>
 
-        <b-button class="btn-block" @click="login(user)">Login</b-button>
-
-        <p class="forgot-password text-center mt-2 mb-4">
-            {{$t("signupPrompt")}} <router-link to="/signup">{{$t("signup")}}</router-link>
-        </p>
-      </form>
-    </b-card>
+      <p class="forgot-password text-center mt-2 mb-4">
+          {{$t("signupPrompt")}} <router-link to="/signup">{{$t("signup")}}</router-link>
+      </p>
+    </form>
   </div>
 </template>
 
@@ -35,11 +30,17 @@ export default {
       user: {
         email: '',
         password: '',
-      }
+      },
+      loading: false
     }
   },
   methods: {
-    ...mapActions(['login'])
+    ...mapActions(['login']),
+    attemptLogin: function(user) {
+      this.loading = true
+      this.login(user)
+      .then(res => this.loading = false)
+    },
   }
 }
 </script>

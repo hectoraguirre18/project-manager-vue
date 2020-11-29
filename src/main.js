@@ -15,7 +15,7 @@ import './assets/css/style.css'
 import locale_en from './locales/en'
 import locale_es from './locales/es'
 
-axios.defaults.baseURL = 'http://localhost:3000/'
+axios.defaults.baseURL = 'http://54.89.103.209/'
 axios.interceptors.request.use(
   function(config) {
     const token = store.getters.token;

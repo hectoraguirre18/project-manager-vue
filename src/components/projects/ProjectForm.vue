@@ -1,79 +1,118 @@
 <template>
   <div>
     <Navbar/>
-    <form id="projectform" class="card p-3 overflow-auto">
+    <form id="projectform">
       <h3>{{ editing ? $t("projectForm.title.edit") : $t("projectForm.title.new") }}</h3>
-      <b-form-group >
-        <label>{{$t("projectForm.name")}}</label>
-        <b-form-input id="pfname" v-model="project.projectName"/>
-      </b-form-group>
-
-      <b-form-group>
-        <label>{{$t("projectForm.description")}}</label>
-        <b-form-input id="pfdesc" v-model="project.projectDescription"/>
-      </b-form-group>
-
-      <b-form-group>
+      <v-text-field :label="$t('projectForm.name')" type="email" v-model="project.projectName"/>
+      <v-text-field :label="$t('projectForm.description')" type="email" v-model="project.projectDescription"/>
+      
+      <!-- <b-form-group>
         <label>{{$t("projectForm.requestDate")}}</label>
         <b-form-datepicker id="pfreqdate" v-model="project.requestDate"/>
-      </b-form-group>
+      </b-form-group> -->
 
-      <b-form-group>
-        <label>{{$t("projectForm.manager")}}</label>
-        <b-form-select id="pfmanager" v-model="project.managerId" :options="managerOptions"/>
-      </b-form-group>
+      <v-menu
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="formattedDate"
+            :label="$t('projectForm.requestDate')"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="project.requestDate"
+          no-title
+        >
+        </v-date-picker>
+      </v-menu>
 
-      <b-form-group>
-        <label>{{$t("projectForm.owner")}}</label>
-        <b-form-select id="pfowner" v-model="project.ownerId" :options="ownerOptions"/>
-      </b-form-group>
+      <v-select
+        :items="managerItems"
+        :label="$t('projectForm.manager')"
+        v-model="project.managerId"/>
 
-      <label>{{$t("projectForm.team")}}</label>
-      <b-container class="p-0">
-        <b-row>
-          <b-col>
-            <b-form-group>
-              <b-form-select
-                id="pfteam"
-                v-model="teamselector"
-                :options="teamOptions"
-                @change="selected"
-              >
-                <template #first>
-                  <b-form-select-option :value="null" disabled>{{$t("projectForm.addMember")}}</b-form-select-option>
-                </template>
-              </b-form-select>
-            </b-form-group>
-          </b-col>
-          <b-col>
-            <b-list-group
-              v-for="member in project.teamIds"
-              v-bind:key="member"
+      <v-select
+        :items="ownerItems"
+        :label="$t('projectForm.owner')"
+        v-model="project.ownerId"/>
+
+      <!-- <v-menu
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="formattedDate"
+            :label="$t('projectForm.requestDate')"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="member in teamOptions"
+            v-bind:key="member.value"
+            @click="selected(member.value)"
+          >
+            <v-list-item-content>
+              <v-list-item-title v-text="member.text"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu> -->
+
+      {{$t("projectForm.team")}}
+      <v-container class="p-0">
+        <v-row no-gutters>
+          <v-col>
+            <v-select
+              :items="teamOptions"
+              :label="$t('projectForm.addMember')"
+              v-model="teamselector"
+              @change="selected"
             >
-              <b-list-group-item
-                class="d-flex justify-content-between align-items-center"
-              >{{nameOf(member)}}
-                  <b-button 
-                    variant="danger"
-                    size="sm"
-                    @click="removeMember(member)">
-                    <b-icon-trash-fill/>
-                  </b-button></b-list-group-item>
-            </b-list-group>
-          </b-col>
-        </b-row>
-      </b-container>
+            </v-select>
+          </v-col>
+          <v-col>
+            <v-list v-if="project.teamIds.length !== 0">
+              <v-list-item
+                v-for="member in project.teamIds"
+                v-bind:key="member"
+              >
+                <v-list-item-content>
+                  <v-list-item-title v-text="nameOf(member)"></v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-btn icon @click="removeMember(member)">
+                    <v-icon >mdi-delete</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list>
+          </v-col>
+        </v-row>
+      </v-container>
 
-      <p>
-        <b-form-group>
-          <label>{{$t("projectForm.started")}}</label>
-          <b-form-checkbox
-            class="d-inline ml-2"
-            switch id="pfstartdate"
-            @change="checkboxChanged"
-            />
-        </b-form-group>
-      </p>
+      <v-container>
+        <v-row align-content="center">
+          {{$t('projectForm.started')}}
+          <v-switch
+            class="mt-0 pt-0 ml-2"
+            @change="checkboxChanged"/>
+        </v-row>
+      </v-container>
       <b-button block @click="onSave">{{$t("projectForm.save")}}</b-button>
     </form>
   </div>
@@ -82,6 +121,7 @@
 <script>
 import Navbar from '../Navbar'
 import {mapActions} from 'vuex'
+import dateFormat from 'dateformat';
 
 export default {
   name: 'Project-Form',
@@ -95,7 +135,7 @@ export default {
       project: {
         projectName: '',
         projectDescription: '',
-        requestDate: new Date(),
+        requestDate: new Date().toISOString().substr(0, 10),
         startDate: null,
         managerId: null,
         ownerId: null,
@@ -134,13 +174,13 @@ export default {
     }
   },
   computed: {
-    managerOptions() {
+    managerItems() {
       return this.users.filter(opt => 
         this.project.teamIds.indexOf(opt.value) === -1 &&
         this.project.ownerId !== opt.value
       )
     },
-    ownerOptions() {
+    ownerItems() {
       return this.users.filter(opt => 
         this.project.teamIds.indexOf(opt.value) === -1 &&
         this.project.managerId !== opt.value
@@ -153,6 +193,9 @@ export default {
         this.project.managerId !== opt.value
       )
     },
+    formattedDate() {
+      return dateFormat(this.project.requestDate, "mmmm d, yyyy")
+    }
   },
   created: function() {
     this.editing = this.$route.params.id != undefined;

@@ -47,7 +47,7 @@
         {{formatDate(item._requestDate)}}
       </template>
       <template v-slot:item._startDate="{item}">
-        {{formatDate(item._requestDate)}}
+        {{formatDate(item._startDate)}}
       </template>
       <template v-slot:item.teamNames="{item}">
         {{formatArray(item.teamNames)}}
@@ -136,7 +136,10 @@ export default {
         return '-'
     },
     formatArray(array) {
-      return array.reduce((prev, current) => `${prev}, ${current}`)
+      if(array && array.length > 0)
+        return array.reduce((prev, current) => `${prev}, ${current}`)
+      else
+        return '-'
     },
   },
   computed: {
@@ -147,22 +150,35 @@ export default {
       return [
         {value: '_projectName', text: this.$t('dashboard.name'), class: 'align-middle'},
         {value: '_projectDescription', text: this.$t('dashboard.description'), class: 'align-middle'},
-        {value: 'managerName', text: this.$t('dashboard.manager'), class: 'align-middle'},
-        {value: 'ownerName', text: this.$t('dashboard.owner'), class: 'align-middle'},
+        {
+          value: 'managerName',
+          text: this.$t('dashboard.manager'),
+          class: 'align-middle',
+          align: 'center'
+        },
+        {
+          value: 'ownerName',
+          text: this.$t('dashboard.owner'),
+          class: 'align-middle',
+          align: 'center'
+        },
         {
           value: 'teamNames',
           text: this.$t('dashboard.members'),
-          class: 'align-middle'
+          class: 'align-middle',
+          align: 'center'
         },
         {
           value: '_requestDate',
           text: this.$t('dashboard.requestDate'), 
-          class: 'text-center align-middle'
+          class: 'text-center align-middle',
+          align: 'center'
         },
         {
           value: '_startDate',
           text: this.$t('dashboard.startDate'), 
-          class: 'text-center align-middle'
+          class: 'text-center align-middle',
+          align: 'center'
         },
         {value: 'edit', text:'', class: 'text-right align-middle', sortable: false},
         {value: 'delete', text:'', class: 'text-right align-middle', sortable: false},

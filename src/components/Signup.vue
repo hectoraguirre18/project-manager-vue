@@ -1,10 +1,42 @@
 <template>
   <div id="signup-form" class="overflow-auto">
+    <validation-observer v-slot="{invalid}">
     <form>
       <h3>{{$t("signup")}}</h3>
-      <v-text-field :label="$t('email')" type="email" v-model="user.email"/>
-      <v-text-field :label="$t('password')" type="password" v-model="user.password"/>
-      <v-text-field :label="$t('name')" v-model="user.name"/>
+      <validation-provider
+        v-slot="{ errors }"
+        rules="required|email"
+      >
+        <v-text-field
+          :label="$t('email')"
+          type="email"
+          v-model="user.email"
+          required
+          :error-messages="errors"/>
+      </validation-provider>
+
+      <validation-provider
+        v-slot="{ errors }"
+        rules="required"
+      >
+        <v-text-field
+          :label="$t('password')"
+          type="password"
+          v-model="user.password"
+          required
+          :error-messages="errors"/>
+      </validation-provider>
+
+      <validation-provider
+        v-slot="{ errors }"
+        rules="required"
+      >
+        <v-text-field
+          :label="$t('name')"
+          v-model="user.name"
+          required
+          :error-messages="errors"/>
+      </validation-provider>
       <v-menu
         :nudge-right="40"
         transition="scale-transition"
@@ -12,25 +44,59 @@
         min-width="290px"
       >
         <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-            v-model="user.birthdate"
-            :label="$t('birthdate')"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-bind="attrs"
-            v-on="on"
-          ></v-text-field>
+          <validation-provider
+            v-slot="{ errors }"
+            rules="required"
+          >
+            <v-text-field
+              v-model="user.birthdate"
+              :label="$t('birthdate')"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+              required
+              :error-messages="errors"/>
+          </validation-provider>
         </template>
         <v-date-picker
           v-model="user.birthdate"
           @input="menu2 = false"
-          no-title
-        >
-        </v-date-picker>
+          no-title/>
       </v-menu>
-      <v-text-field :label="$t('curp')" v-model="user.curp"/>
-      <v-text-field :label="$t('rfc')" v-model="user.rfc"/>
-      <v-text-field :label="$t('address')" v-model="user.address"/>
+
+      <validation-provider
+        v-slot="{ errors }"
+        rules="required"
+      >
+        <v-text-field
+          :label="$t('curp')"
+          v-model="user.curp"
+          required
+          :error-messages="errors"/>
+      </validation-provider>
+
+      <validation-provider
+        v-slot="{ errors }"
+        rules="required"
+      >
+        <v-text-field
+          :label="$t('rfc')"
+          v-model="user.rfc"
+          required
+          :error-messages="errors"/>
+      </validation-provider>
+
+      <validation-provider
+        v-slot="{ errors }"
+        rules="required"
+      >
+        <v-text-field
+          :label="$t('address')"
+          v-model="user.address"
+          required
+          :error-messages="errors"/>
+      </validation-provider>
 
       <p>
         {{$t("skills")}}
@@ -40,22 +106,39 @@
       </p>
       <v-container>
         <v-row
-          v-for="skill in user.skillList"
+          v-for="(skill, index) in user.skillList"
           v-bind:key="skill.timestamp"
           align="center"
         >
           <v-col>
-            <v-text-field :label="$t('skill.name')" v-model="skill.description"/>
+            <validation-provider
+              v-slot="{ errors }"
+              rules="required"
+            >
+              <v-text-field
+                :label="$t('skill.name')"
+                v-model="skill.description"
+                required
+                :error-messages="errors"/>
+            </validation-provider>
           </v-col>
           <v-col>
+            <validation-provider
+              v-slot="{ errors }"
+              rules="required"
+            >
             <v-select
               :items="ranks"
               :label="$t('skill.rank.select')"
+              required
+              :error-messages="errors"
               v-model="skill.rank"/>
+            </validation-provider>
           </v-col>
           <v-col
             align="center"
             cols="2"
+            v-if="user.skillList.length > 1"
           >
             <v-icon @click="removeSkill(skill)">mdi-delete</v-icon>
           </v-col>
@@ -65,11 +148,13 @@
       <p>
         <v-btn
           class="btn-block"
-          @click="signup(user)"
+          @click="attemptSignup(user)"
           :loading="loading"
+          :disabled="invalid"
         >{{$t("signup")}}</v-btn>
       </p>
     </form>
+    </validation-observer>
   </div>
 </template>
 
@@ -77,8 +162,27 @@
 import axios from 'axios';
 import {mapActions} from 'vuex';
 
+import { required, digits, email, max, regex } from 'vee-validate/dist/rules'
+import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+
+setInteractionMode('eager')
+
+extend('required', {
+  ...required,
+  message: 'This field can not be empty'
+})
+
+extend('email', {
+  ...email,
+  message: 'This email is invalid'
+})
+
 export default {
   name: 'Signup',
+  components: {
+    ValidationProvider,
+    ValidationObserver
+  },
   data () {
     return {
       user: {
@@ -112,7 +216,7 @@ export default {
       const index = this.user.skillList.indexOf(skill);
       this.user.skillList.splice(index, 1);
     },
-    attemptLogin: function(user) {
+    attemptSignup: function(user) {
       this.loading = true
       this.signup(user)
       .then(res => this.loading = false)

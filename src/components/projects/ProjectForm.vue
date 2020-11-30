@@ -1,120 +1,120 @@
 <template>
   <div>
     <Navbar/>
-    <form id="projectform">
-      <h3>{{ editing ? $t("projectForm.title.edit") : $t("projectForm.title.new") }}</h3>
-      <v-text-field :label="$t('projectForm.name')" type="email" v-model="project.projectName"/>
-      <v-text-field :label="$t('projectForm.description')" type="email" v-model="project.projectDescription"/>
-      
-      <!-- <b-form-group>
-        <label>{{$t("projectForm.requestDate")}}</label>
-        <b-form-datepicker id="pfreqdate" v-model="project.requestDate"/>
-      </b-form-group> -->
-
-      <v-menu
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
+    <v-progress-circular
+      indeterminate
+      v-if="loading"
+      class="centered"
+    ></v-progress-circular>
+    <validation-observer ref="observer" v-slot="{ invalid }">
+      <form
+        class="centered"
+        v-if="!loading"
       >
-        <template v-slot:activator="{ on, attrs }">
+        <v-container>
+          <v-row>
+            <h3>{{ editing ? $t("projectForm.title.edit") : $t("projectForm.title.new") }}</h3>
+            <v-spacer/>
+            <v-switch
+              class="mt-0 pt-0 ml-2"
+              v-if="!previouslyStarted"
+              @change="checkboxChanged"/>
+            {{$t(previouslyStarted ? 'projectForm.started' : 'projectForm.startnow')}}
+          </v-row>
+        </v-container>
+        <validation-provider v-slot="{ errors }" rules="required">
           <v-text-field
-            :value="formattedDate"
-            :label="$t('projectForm.requestDate')"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-bind="attrs"
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-date-picker
-          v-model="project.requestDate"
-          no-title
+            :label="$t('projectForm.name')"
+            v-model="project.projectName"
+            required
+            :error-messages="errors"/>
+        </validation-provider>
+        <validation-provider v-slot="{ errors }" rules="required">
+          <v-text-field
+            :label="$t('projectForm.description')"
+            v-model="project.projectDescription"
+            required
+            :error-messages="errors"/>
+        </validation-provider>
+
+        <v-menu
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="290px"
         >
-        </v-date-picker>
-      </v-menu>
-
-      <v-select
-        :items="managerItems"
-        :label="$t('projectForm.manager')"
-        v-model="project.managerId"/>
-
-      <v-select
-        :items="ownerItems"
-        :label="$t('projectForm.owner')"
-        v-model="project.ownerId"/>
-
-      <!-- <v-menu
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-            v-model="formattedDate"
-            :label="$t('projectForm.requestDate')"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-bind="attrs"
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="member in teamOptions"
-            v-bind:key="member.value"
-            @click="selected(member.value)"
+          <template v-slot:activator="{ on, attrs }">
+            <validation-provider v-slot="{ errors }" rules="required">
+              <v-text-field
+                :value="formattedDate"
+                :label="$t('projectForm.requestDate')"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              required
+              :error-messages="errors"/>
+            </validation-provider>
+          </template>
+          <v-date-picker
+            v-model="project.requestDate"
+            no-title
           >
-            <v-list-item-content>
-              <v-list-item-title v-text="member.text"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu> -->
+          </v-date-picker>
+        </v-menu>
 
-      {{$t("projectForm.team")}}
-      <v-container class="p-0">
-        <v-row no-gutters>
-          <v-col>
-            <v-select
-              :items="teamOptions"
-              :label="$t('projectForm.addMember')"
-              v-model="teamselector"
-              @change="selected"
-            >
-            </v-select>
-          </v-col>
-          <v-col>
-            <v-list v-if="project.teamIds.length !== 0">
-              <v-list-item
-                v-for="member in project.teamIds"
-                v-bind:key="member"
+        <validation-provider v-slot="{ errors }" rules="required">
+          <v-select
+            :items="managerItems"
+            :label="$t('projectForm.manager')"
+            required
+            :error-messages="errors"
+            v-model="project.managerId"/>
+        </validation-provider>
+
+        <validation-provider v-slot="{ errors }" rules="required">
+          <v-select
+            :items="ownerItems"
+            :label="$t('projectForm.owner')"
+            required
+            :error-messages="errors"
+            v-model="project.ownerId"/>
+        </validation-provider>
+
+        {{$t("projectForm.team")}}
+        <v-container class="p-0">
+          <v-row>
+            <v-col>
+              <v-select
+                :items="teamOptions"
+                :label="$t('projectForm.addMember')"
+                v-model="teamselector"
+                @change="selected"
               >
-                <v-list-item-content>
-                  <v-list-item-title v-text="nameOf(member)"></v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-btn icon @click="removeMember(member)">
-                    <v-icon >mdi-delete</v-icon>
-                  </v-btn>
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-container>
-        <v-row align-content="center">
-          {{$t('projectForm.started')}}
-          <v-switch
-            class="mt-0 pt-0 ml-2"
-            @change="checkboxChanged"/>
-        </v-row>
-      </v-container>
-      <b-button block @click="onSave">{{$t("projectForm.save")}}</b-button>
-    </form>
+              </v-select>
+            </v-col>
+            <v-col>
+              <v-list class="no-bg" v-if="project.teamIds.length !== 0">
+                <v-list-item
+                  v-for="member in project.teamIds"
+                  v-bind:key="member"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-text="nameOf(member)"></v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-btn icon @click="removeMember(member)">
+                      <v-icon >mdi-delete</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-list>
+            </v-col>
+          </v-row>
+        </v-container>
+        <b-button block @click="onSave">{{$t("projectForm.save")}}</b-button>
+      </form>
+    </validation-observer>
   </div>
 </template>
 
@@ -123,15 +123,33 @@ import Navbar from '../Navbar'
 import {mapActions} from 'vuex'
 import dateFormat from 'dateformat';
 
+import { required, digits, email, max, regex } from 'vee-validate/dist/rules'
+import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+
+setInteractionMode('eager')
+
+extend('required', {
+  ...required,
+  message: 'This field can not be empty'
+})
+
+extend('email', {
+  ...email,
+  message: 'This email is invalid'
+})
+
 export default {
   name: 'Project-Form',
   components: {
-    Navbar
+    Navbar,
+    ValidationProvider,
+    ValidationObserver
   },
   data() {
     return {
       title: '',
       editing: false,
+      previouslyStarted: false,
       project: {
         projectName: '',
         projectDescription: '',
@@ -142,7 +160,8 @@ export default {
         teamIds: []
       },
       users:[],
-      teamselector: null
+      teamselector: null,
+      loading: true,
     };
   },
   methods: {
@@ -211,15 +230,21 @@ export default {
       });
       if(this.$route.params.id) {
         this.getProjectById(this.$route.params.id)
-        .then(project => this.project = {
-          projectName: project._projectName,
-          projectDescription: project._projectDescription,
-          requestDate: project._requestDate,
-          startDate: project._startDate,
-          managerId: project._managerId,
-          ownerId: project._ownerId,
-          teamIds: project._teamIds
+        .then(project => {
+          this.project = {
+            projectName: project._projectName,
+            projectDescription: project._projectDescription,
+            requestDate: project._requestDate,
+            startDate: project._startDate,
+            managerId: project._managerId,
+            ownerId: project._ownerId,
+            teamIds: project._teamIds
+          }
+          this.previouslyStarted = this.editing && this.project.startDate != null
+          this.loading = false;
         })
+      } else {
+        this.loading = false;
       }
     });
   }
@@ -228,7 +253,7 @@ export default {
 
 <style scoped>
 
-#projectform {
+.centered {
   position: fixed;
   width: 18cm;
   top: 50%;
@@ -236,6 +261,10 @@ export default {
   transform: translate(-50%, -50%);
   max-height: 90%;
   max-width: 60%;
+}
+
+.no-bg{
+  background-color: transparent;
 }
 
 </style>

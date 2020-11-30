@@ -47,7 +47,8 @@ export default {
     owner: 'Product Owner',
     team: 'Equipo',
     addMember: 'Añadir un miembro',
-    started: 'Marcar como iniciado',
+    startnow: 'Iniciar ahora',
+    started: 'Ya Iniciado',
     save: 'Guardar Proyecto'
   },
   appBar: {

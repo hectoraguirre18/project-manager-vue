@@ -1,7 +1,7 @@
 <template>
-<div>
+  <div>
     <v-app-bar app>
-      <v-toolbar-title class="ml-2">
+      <v-toolbar-title class="ml-2" @click="goToDashboard" style="cursor: pointer">
         {{$t("appName")}}
       </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -44,7 +44,7 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -72,6 +72,9 @@ export default {
       this.$i18n.locale = lang;
       this.$router.push({query: {hl: lang}})
     },
+    goToDashboard: function() {
+      this.$router.push('/dashboard')
+    }
   }
 }
 </script>

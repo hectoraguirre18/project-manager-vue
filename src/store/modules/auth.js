@@ -31,7 +31,10 @@ const actions = {
         email: user.email,
         token: res.data.objs.token
       }))
-    .then(res => router.push('/dashboard'))
+    .then(res => router.push({
+      path: '/dashboard',
+      query: router.app._route.query
+    }))
     .catch(err => {
       console.log(err)
       alert('Authentication failed')
@@ -39,7 +42,10 @@ const actions = {
   },
   async logout({commit}){
     await commit('logout');
-    router.push('/login');
+    router.push({
+      path: '/login',
+      query: router.app._route.query
+    })
   }
 };
 

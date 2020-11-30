@@ -2,7 +2,7 @@
   <div>
     <Navbar/>
     <v-data-table
-      class="row-pointer"
+      class="row-pointer mt-2"
       :headers="headers"
       :items="dashboard.docs"
       v-if="dashboard != null"
@@ -95,12 +95,18 @@ export default {
   methods: {
     ...mapActions(['logout', 'getDashboard', 'deleteProject']),
     rowClicked: function(project) {
-      this.$router.push(`/project/${project._id}`)
+      this.$router.push({
+        path: `/project/${project._id}`,
+        query: this.$route.query
+      })
     },
     editClicked: function(item) {
       const index = this.dashboard.docs.indexOf(item)
       const id = this.dashboard.docs[index]._id
-      this.$router.push(`/project/edit/${id}`)
+      this.$router.push({
+        path: `/project/edit/${id}`,
+        query: this.$route.query
+      })
     },
     loadProjects: function(page){
       this.loading = true;
@@ -112,7 +118,10 @@ export default {
       .catch(err => console.error(err))
     },
     onPressedNewProject: function(event) {
-      this.$router.push('/project/new')
+      this.$router.push({
+        path: '/project/new',
+        query: this.$route.query
+      })
     },
     deleteItem (item) {
       this.deletingId = item._id

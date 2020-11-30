@@ -4,6 +4,14 @@
       ref="observer"
       v-slot="{ invalid }"
     >
+    <v-container>
+      <v-row justify="center">
+        <v-img
+          :src="logo"
+          max-width="75%"
+        ></v-img>
+      </v-row>
+    </v-container>
     <form @submit.prevent="submit">
       <h3>{{$t("login")}}</h3>
       <validation-provider
@@ -52,6 +60,7 @@
 
 import axios from 'axios';
 import {mapGetters, mapActions} from 'vuex';
+import image from '../assets/images/logo.png';
 
 import { required, digits, email, max, regex } from 'vee-validate/dist/rules'
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
@@ -80,7 +89,8 @@ export default {
         email: '',
         password: '',
       },
-      loading: false
+      loading: false,
+      logo: image,
     }
   },
   methods: {

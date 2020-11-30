@@ -54,7 +54,8 @@ export default {
   appBar: {
     lang: 'Lang',
     account: 'Mi Cuenta',
-    signout: 'Cerrar sesión'
+    signout: 'Cerrar sesión',
+    user: 'Usuario:'
   },
   i18n: {
     dayNames: [

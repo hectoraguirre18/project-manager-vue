@@ -33,7 +33,10 @@ const actions = {
   async updateProject({dispatch}, options) {
     axios.put(`projects/${options.id}`, options.project)
     .then(res => {
-      router.push('/dashboard')
+      router.push({
+        path: '/dashboard',
+        query: router.app._route.query
+      })
     })
     .catch(err => {
       console.log(err)
@@ -43,7 +46,10 @@ const actions = {
   async postProject({dispatch}, project) {
     axios.post('projects', project)
     .then(res => {
-      router.push('/dashboard')
+      router.push({
+        path: '/dashboard',
+        query: router.app._route.query
+      })
     })
     .catch(err => {
       console.log(err)

@@ -38,6 +38,11 @@
           </v-btn>
         </template>
         <v-list>
+          <v-list-item disabled>
+            <v-list-item-title>
+              {{$t("appBar.user")}} {{$store.getters.email}}
+            </v-list-item-title>
+          </v-list-item>
           <v-list-item @click="logout">
             <v-list-item-title>{{$t("appBar.signout")}}</v-list-item-title>
           </v-list-item>
@@ -70,10 +75,13 @@ export default {
     ...mapActions(['logout']),
     langChange: function(lang) {
       this.$i18n.locale = lang;
-      this.$router.push({query: {hl: lang}})
+      this.$router.push({query: {...this.$route.query, hl: lang}})
     },
     goToDashboard: function() {
-      this.$router.push('/dashboard')
+      this.$router.push({
+        path: '/dashboard',
+        query: this.$route.query
+      })
     }
   }
 }

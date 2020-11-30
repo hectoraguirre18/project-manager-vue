@@ -4,6 +4,17 @@
       ref="observer"
       v-slot="{ invalid }"
     >
+    <v-dialog v-model="errorDialog" width="unset">
+      <v-card
+        class="p-4"
+        @click="errorDialog = false"
+        style="cursor: auto"
+        :ripple="false"
+      >
+        <v-card-title><h4>{{$t("error.login")}}</h4></v-card-title>
+        <v-card
+      </v-card>
+    </v-dialog>
     <v-container>
       <v-row justify="center">
         <v-img
@@ -46,7 +57,7 @@
         :loading="loading"
         type="submit"
         :disabled="invalid"
-      >Login</v-btn>
+      >{{$t("login")}}</v-btn>
 
       <p class="forgot-password text-center mt-2 mb-4">
           {{$t("signupPrompt")}} <router-link to="/signup">{{$t("signup")}}</router-link>
@@ -91,6 +102,7 @@ export default {
       },
       loading: false,
       logo: image,
+      errorDialog: false,
     }
   },
   methods: {
@@ -99,6 +111,11 @@ export default {
       this.loading = true
       this.login(user)
       .then(res => this.loading = false)
+      .catch(err => {
+        console.log(err);
+        this.errorDialog = true;
+        this.loading = false;
+      })
     },
     submit () {
       this.$refs.observer.validate()

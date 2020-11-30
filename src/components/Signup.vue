@@ -1,6 +1,17 @@
 <template>
   <div id="signup-form" class="overflow-auto">
     <validation-observer v-slot="{invalid}">
+    <v-dialog v-model="errorDialog" width="unset">
+      <v-card
+        class="p-4"
+        @click="errorDialog = false"
+        style="cursor: auto"
+        :ripple="false"
+      >
+        <v-card-title><h4>{{$t("error.signup")}}</h4></v-card-title>
+        <v-card
+      </v-card>
+    </v-dialog>
     <form>
       <h3>{{$t("signup")}}</h3>
       <validation-provider
@@ -194,6 +205,7 @@ export default {
         rfc: '',
         address: '',
         skillList: [],
+        errorDialog: false,
       },
       ranks: [
         {value: 'junior', text: this.$t('skill.rank.junior')},
@@ -220,6 +232,11 @@ export default {
       this.loading = true
       this.signup(user)
       .then(res => this.loading = false)
+      .catch(err => {
+        console.log(err)
+        this.errorDialog = true;
+        this.loading = false;
+      })
     },
   },
   created() {

@@ -14,18 +14,14 @@ const getters = {
 
 const actions = {
   async signup({dispatch}, user) {
-    axios.post('auth/signup', user)
+    return axios.post('auth/signup', user)
     .then(res => dispatch('login', {
       email: user.email,
       password: user.password
     }))
-    .catch(err => {
-      console.log(err)
-      alert('Signup failed')
-    })
   },
   async login({commit}, user) {
-    axios.post('auth/login', user)
+    return axios.post('auth/login', user)
     .then(res => commit('setUser', {
         id: res.data.objs.id,
         email: user.email,
@@ -35,10 +31,6 @@ const actions = {
       path: '/dashboard',
       query: router.app._route.query
     }))
-    .catch(err => {
-      console.log(err)
-      alert('Authentication failed')
-    })
   },
   async logout({commit}){
     await commit('logout');

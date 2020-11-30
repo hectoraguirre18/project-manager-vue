@@ -2,12 +2,18 @@
   <div>
     <Navbar/>
     <v-data-table
+      class="row-pointer"
       :headers="headers"
       :items="dashboard.docs"
       v-if="dashboard != null"
       :loading="loading"
-      :options.sync="options"
+      :options.sync="pageOptions"
       :server-items-length="dashboard.totalDocs"
+      disable-sort
+      @click:row="rowClicked"
+      :footer-props="{
+        'items-per-page-options': [10]
+      }"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -37,15 +43,24 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item._requestDate="{item}">
+        {{formatDate(item._requestDate)}}
+      </template>
+      <template v-slot:item._startDate="{item}">
+        {{formatDate(item._requestDate)}}
+      </template>
+      <template v-slot:item.teamNames="{item}">
+        {{formatArray(item.teamNames)}}
+      </template>
       <template v-slot:item.edit="{item}">
         <v-btn
-        @click="editClicked(item)">
+        @click.stop="editClicked(item)">
           {{$t("dashboard.edit")}}
         </v-btn>
       </template>
       <template v-slot:item.delete="{item}">
         <v-icon
-          @click="deleteItem(item)"
+          @click.stop="deleteItem(item)"
         >mdi-delete</v-icon>
       </template>
     </v-data-table>
@@ -57,9 +72,9 @@ import dateFormat from 'dateformat';
 import axios from 'axios';
 import {mapActions} from 'vuex';
 import async from 'async';
+import {i18n} from '../main'
 
 import Navbar from './Navbar'
-
 
 export default {
   components: {
@@ -71,14 +86,14 @@ export default {
         docs: []
       },
       loading: true,
-      options: {},
+      pageOptions: {},
       dialog: false,
       dialogDelete: false,
-      deletingIndex: null,
+      deletingId: null,
     }
   },
   methods: {
-    ...mapActions(['logout', 'getDashboard']),
+    ...mapActions(['logout', 'getDashboard', 'deleteProject']),
     rowClicked: function(project) {
       this.$router.push(`/project/${project._id}`)
     },
@@ -99,48 +114,34 @@ export default {
     onPressedNewProject: function(event) {
       this.$router.push('/project/new')
     },
-    linkGen(pageNum) {
-      return pageNum === 1 ? '?' : `?page=${pageNum}`
-    },
     deleteItem (item) {
-      this.deletingIndex = this.dashboard.docs.indexOf(item)
+      this.deletingId = item._id
       this.dialogDelete = true
     },
     deleteItemConfirm () {
-      this.dashboard.docs.splice(this.deletingIndex, 1)
-      this.closeDelete()
+      this.deleteProject(this.deletingId)
+      .then(res => {
+        this.closeDelete()
+        this.loadProjects(this.pageOptions)
+      })
     },
     closeDelete() {
+      this.deletingId = null
       this.dialogDelete = false;
+    },
+    formatDate(date) {
+      if(date)
+        return dateFormat(date, "mmmm d, yyyy")
+      else
+        return '-'
+    },
+    formatArray(array) {
+      return array.reduce((prev, current) => `${prev}, ${current}`)
     },
   },
   computed: {
-    fields() {
-      return [
-        {key: '_projectName', label: this.$t('dashboard.edit'), class: 'align-middle'},
-        {key: '_projectDescription', label: this.$t('dashboard.description'), class: 'align-middle'},
-        {key: 'managerName', label: this.$t('dashboard.manager'), class: 'align-middle'},
-        {key: 'ownerName', label: this.$t('dashboard.owner'), class: 'align-middle'},
-        {
-          key: 'teamNames',
-          label: this.$t('dashboard.members'),
-          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`),
-          class: 'align-middle'
-        },
-        {
-          key: '_requestDate',
-          label: this.$t('dashboard.requestDate'), 
-          formatter: val => dateFormat(val, "mmmm d, yyyy"),
-          class: 'text-center align-middle'
-        },
-        {
-          key: '_startDate',
-          label: this.$t('dashboard.startDate'), 
-          formatter: val => val ? dateFormat(val, "mmmm d, yyyy") : '-',
-          class: 'text-center align-middle'
-        },
-        {key: 'edit', class: 'text-right align-middle'},
-      ];
+    locale() {
+      return i18n.locale
     },
     headers() {
       return [
@@ -151,39 +152,38 @@ export default {
         {
           value: 'teamNames',
           text: this.$t('dashboard.members'),
-          formatter: val => val.reduce((acc, value) => `${acc}, ${value}`),
           class: 'align-middle'
         },
         {
           value: '_requestDate',
           text: this.$t('dashboard.requestDate'), 
-          formatter: val => dateFormat(val, "mmmm d, yyyy"),
           class: 'text-center align-middle'
         },
         {
           value: '_startDate',
           text: this.$t('dashboard.startDate'), 
-          formatter: val => val ? dateFormat(val, "mmmm d, yyyy") : '-',
           class: 'text-center align-middle'
         },
         {value: 'edit', text:'', class: 'text-right align-middle', sortable: false},
         {value: 'delete', text:'', class: 'text-right align-middle', sortable: false},
       ];
-    }
-  },
-  beforeCreate: function() {
-    document.body.className = 'home';
+    },
   },
   mounted: function() {
-    this.loadProjects(this.$route.query.page)
+    dateFormat.i18n = this.$t('i18n');
+    this.loadProjects(this.pageOptions)
   },
   watch: {
-    $route (to, from) {
-      this.loadProjects(to.query.page)
+    locale(val) {
+      dateFormat.i18n = this.$t('i18n');
     },
-    options: {
+    pageOptions: {
       handler() {
-        this.loadProjects(this.$route.query.page)
+        const options = {
+          page: this.pageOptions.page,
+          limit: this.pageOptions.itemsPerPage
+        };
+        this.loadProjects(options)
       },
       deep: true,
     },
@@ -196,3 +196,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.row-pointer >>> tbody tr :hover {
+  cursor: pointer;
+}
+</style>

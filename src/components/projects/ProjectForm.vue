@@ -19,7 +19,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
-            v-model="formattedDate"
+            :value="formattedDate"
             :label="$t('projectForm.requestDate')"
             prepend-icon="mdi-calendar"
             readonly
@@ -163,7 +163,6 @@ export default {
     },
     onSave: function() {
       if(this.editing) {
-        console.log(this.project)
         this.updateProject({
           id: this.$route.params.id,
           project: this.project
@@ -194,7 +193,11 @@ export default {
       )
     },
     formattedDate() {
-      return dateFormat(this.project.requestDate, "mmmm d, yyyy")
+      if(this.project.requestDate) {
+        return new Date(this.project.requestDate).toISOString().substring(0, 10)
+      } else {
+        return ''
+      }
     }
   },
   created: function() {

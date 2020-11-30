@@ -9,11 +9,9 @@ const getters = {
 };
 
 const actions = {
-  async getDashboard({dispatch}, page) {
+  async getDashboard({dispatch}, options) {
     return axios.get('projects', {
-      params: {
-        page: page
-      }
+      params: options
     })
     .then(async res => {
       return {
@@ -50,6 +48,14 @@ const actions = {
     .catch(err => {
       console.log(err)
       alert('Project creation failed')
+    })
+  },
+  async deleteProject({dispatch}, id) {
+    return axios.delete(`projects/${id}`)
+    .then(res => res.data)
+    .catch(err => {
+      console.log(err)
+      alert('Project deleting failed')
     })
   },
   async addNamesToProject({dispatch},project) {

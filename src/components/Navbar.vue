@@ -8,7 +8,6 @@
       <v-menu offset-y>
         <template v-slot:activator="{on, attrs}">
           <v-btn
-            dark
             depressed
             text
             v-bind="attrs"
@@ -30,7 +29,6 @@
       <v-menu offset-y>
         <template v-slot:activator="{on, attrs}">
           <v-btn
-            dark
             depressed
             text
             v-bind="attrs"

@@ -112,7 +112,7 @@
             </v-col>
           </v-row>
         </v-container>
-        <b-button block @click="onSave">{{$t("projectForm.save")}}</b-button>
+        <b-button block :disabled="invalid" @click="onSave">{{$t("projectForm.save")}}</b-button>
       </form>
     </validation-observer>
   </div>

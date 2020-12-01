@@ -88,7 +88,8 @@ const actions = {
       console.log(err)
       return project
     })
-  }
+  },
+  
 };
 
 const mutations = {
